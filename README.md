@@ -3,7 +3,7 @@ To compile and run these files, download Assemble.sh and put it in the same dire
 Then type this into terminal 
 
 ```
-./Assemble.sh input
+./Assemble.sh filename
 ```
 Dont add .asm file extension into the command
 Requires NASM
