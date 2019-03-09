@@ -5,7 +5,7 @@ Then type this into terminal
 ```
 ./Assemble.sh filename
 ```
-Dont add .asm file extension into the command
+Don't add .asm file extension into the command
 Requires NASM
 
 ## Sieve_of_Eratosthenes.asm
