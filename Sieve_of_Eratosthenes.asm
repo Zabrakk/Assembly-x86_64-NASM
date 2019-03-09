@@ -5,7 +5,6 @@
 
 ;Removing nonprime numbers
 ;rax = number from stack, not 0
-;rcx = 8, for changing stack position
 ;rsi = counter for rsp value changing
 ;rbx = copy of rax, for multiplication
 ;r8 = points to original rbp
