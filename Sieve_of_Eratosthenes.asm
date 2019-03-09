@@ -23,7 +23,7 @@ STDOUT equ 1
 SYS_WRITE equ 1
 SYS_EXIT equ 60
 
-MAX equ 200 ;Max number for stack here
+MAX equ 2000 ;Max number for stack here
 
 section .data
   newLine: db 0xA, 0xD ;For printing numbers on different lines
@@ -35,64 +35,41 @@ section .text
   global _start
 
 _start:
-  mov rax, MAX ;Max number
-  mov rbp, rsp
+  mov rax, MAX ;Max number to rax
+  mov rbp, rsp ;Stack pointer to base
   mov r8, rbp
   jmp _fillStack
 
-_fillStack: ;Add numbers from MAX -> 1 into stack
+_fillStack: ;Add numbers from MAX -> 2 into stack
+  cmp rax, 1 ;Don't add 1 to stack
+  jz _initNumberRemoval
   push rax
   dec rax
-  cmp rax, 0
-  jnz _fillStack
-  ;Stack filled
-  jmp _initNumberRemoval
+  jmp _fillStack
 
 _initNumberRemoval:
-  mov rcx, 8
-  mov rsi, 0
-  mov rbp, rsp
-  pop rax ;Remove one from stack, it is not a prime number
-  mov r9, rsp
-  jmp _removeNumbers
+  mov rsi, 0 ;Counter
+  mov r9, rsp ;Store the location for top of stack in r9
+  jmp _getNum
 
-_removeNumbers:
-  add rbp, rcx ;Get next number in stack
-  mov rsp, rbp
-  mov rax, [rsp] ;Number to rax
-  cmp rax, 0 ;Is current number 0?
-  jz _removeNumbers ;If true, get next number
-  mov rbx, rax
+_getNum:
+  mov rax, [rsp + 8*rsi] ;Calculate stack offset based on rsi
+  inc rsi ;Getting the next value in stack
+  cmp rax, 0
+  jz _getNum ;Get next number, this one has beed zeroed
 
+  mov rbx, rax ;Store original rax into rbx for add operation
   mul rax
-  cmp rax, MAX ;Is the number² bigger than MAX?
-  jg _initPrinting ;If true, all numbers have been found, start printing
-  jmp _mulPointer
+  cmp rax, MAX ;Is currect number² greater than MAX
+  jg _initPrinting ;To print
+  sub rax, 2 ;To get the correct value we have to subtract 2 from rax
 
-_mulPointer: ;Start from number = rax * rax, e.g. 9
-  dec rax
-  add rsp, rcx ;Add 8
-  cmp rax, rbx
-  jnz _mulPointer ;rsp now points to number rax * rax
-
-  mov dword [rsp], 0 ;rsp value to 0
-  mul rax
-  xor rsi, rsi ;Zero rsi
-  jmp _movePointer
-
-_movePointer: ;Add 8 to rsp until we are at the value we want to remove
-  add rsp, rcx
-  inc rsi ;Counter
-  cmp rsi, rbx
-  jnz _movePointer
-
+_removeLoop:
+  cmp rax, MAX
+  jg _getNum
+  mov DWORD [rsp + 8*rax], 0 ;Zero the number equal to rax in stack
   add rax, rbx
-  cmp rax, MAX ;Check if rax + rbx is more than MAX
-  jg _removeNumbers ;If true return to _removeNumbers
-
-  mov dword [rsp], 0 ;Zero found nonprime number
-  xor rsi, rsi
-  jmp _movePointer
+  jmp _removeLoop
 
 _initPrinting: ;Set register values for printing
   mov rcx, digitSpace
