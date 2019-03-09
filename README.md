@@ -6,5 +6,8 @@ Then type this into terminal
 ./Assemble.sh input
 ```
 Dont add .asm file extension into the command
-
 Requires NASM
+
+## Sieve_of_Eratosthenes.asm
+Max number can be modified in the files code
+**Don't use a number larger that 999999**
